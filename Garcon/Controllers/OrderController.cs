@@ -67,6 +67,41 @@ namespace Garcon.Controllers
             return Ok(order);
         }
 
+        // GET api/Order/ByBeacon/5
+        /// <summary>
+        /// Retrieve any open orders attached to a Beacon.
+        /// </summary>
+        /// <param name="id">The OrderId of the Order to return.</param>
+        /// <returns>
+        /// 200 - Success + The requested Order.
+        /// 401 - Not Authorized 
+        /// 404 - Not Found + Reason
+        /// </returns>
+        [ResponseType(typeof(OrderModel))]
+        [Route("api/Order/ByBeacon")]
+        public IHttpActionResult GetOrderByBeacon(string beaconId)
+        {
+            if (beaconId == null)
+                return this.BadRequest("You must supply a beaconId");
+
+            // Check to see if this table has any open orders attached
+            Table table = _db.Tables.FirstOrDefault<Table>(o => o.beaconId == beaconId);
+            
+            if (table == null)
+            {
+                return this.NotFound("Table not found.");
+            }
+
+            OrderModel order = Get().FirstOrDefault<OrderModel>(o => o.tableId == table.id && o.closeDateTime == null);
+
+            if (order == null || table.available == true)
+            {
+                return this.NotFound("No Open Orders Found for " + beaconId + ".");
+            }
+            
+            return Ok(order);
+        }
+
         // PUT api/Order/5
         /// <summary>
         /// Save changes to a single Order to the database.

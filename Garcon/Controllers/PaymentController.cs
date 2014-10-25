@@ -37,6 +37,7 @@ namespace Garcon.Controllers
             {
                 id = o.id, 
                 orderId = o.orderId, 
+                userId = o.UserCard.userId,
                 userCardId = o.userCardId, 
                 tipAmount = o.tipAmount, 
                 amount = o.amount

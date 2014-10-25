@@ -9,6 +9,7 @@ namespace Garcon.Models
     {
         public int id { get; set; }
         public int orderId { get; set; }
+        public int userId { get; set; }
         public int userCardId { get; set; }
         public decimal amount { get; set; }
         public decimal tipAmount { get; set; }

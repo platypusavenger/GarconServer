@@ -440,6 +440,17 @@
             404 - Not Found + Reason
             </returns>
         </member>
+        <member name="M:Garcon.Controllers.OrderController.GetOrderByBeacon(System.String)">
+            <summary>
+            Retrieve any open orders attached to a Beacon.
+            </summary>
+            <param name="id">The OrderId of the Order to return.</param>
+            <returns>
+            200 - Success + The requested Order.
+            401 - Not Authorized 
+            404 - Not Found + Reason
+            </returns>
+        </member>
         <member name="M:Garcon.Controllers.OrderController.Put(System.Int32,Garcon.Models.OrderModel)">
             <summary>
             Save changes to a single Order to the database.
@@ -762,6 +773,17 @@
             </returns>
         </member>
         <member name="M:Garcon.Controllers.UserController.Get(System.Int32)">
+            <summary>
+            Retrieve a single User from the database.
+            </summary>
+            <param name="id">The UserId of the User to return.</param>
+            <returns>
+            200 - Success + The requested User.
+            401 - Not Authorized 
+            404 - Not Found + Reason
+            </returns>
+        </member>
+        <member name="M:Garcon.Controllers.UserController.GetUserHistory(System.Int32)">
             <summary>
             Retrieve a single User from the database.
             </summary>

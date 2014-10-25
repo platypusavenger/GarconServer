@@ -63,6 +63,44 @@ namespace Garcon.Controllers
             return Ok(user);
         }
 
+        // GET api/User/5
+        /// <summary>
+        /// Retrieve a single User from the database.
+        /// </summary>
+        /// <param name="id">The UserId of the User to return.</param>
+        /// <returns>
+        /// 200 - Success + The requested User.
+        /// 401 - Not Authorized 
+        /// 404 - Not Found + Reason
+        /// </returns>
+        [ResponseType(typeof(OrderDetailModel))]
+        [Route("api/User/History/{id:int}")]
+        public IHttpActionResult GetUserHistory(int id)
+        {
+            User user = _db.Users.FirstOrDefault(o => o.id == id);
+            if (user == null)
+            {
+                return this.NotFound("User not found.");
+            }
+
+            UserHistoryModel userHistory = new UserHistoryModel();
+            userHistory.id = user.id;
+            userHistory.email = user.email;
+            userHistory.username = user.username;
+            userHistory.OrderHistory = new List<OrderDetailModel>();
+            foreach (UserCard oneCard in user.UserCards)
+            {
+                foreach (Payment onePayment in oneCard.Payments.OrderByDescending(o => o.Order.openDateTime))
+                {
+                    OrderDetailModel detail = new OrderDetailModel(onePayment.Order, id);
+                    if (detail.closeDateTime != null)
+                        userHistory.OrderHistory.Add(detail);
+                }
+            }
+
+            return Ok(userHistory);
+        }
+
         // PUT api/User/5
         /// <summary>
         /// Save changes to a single User to the database.

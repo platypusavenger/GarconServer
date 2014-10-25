@@ -99,6 +99,7 @@ namespace Garcon.Controllers
                 orderitem.description = orderitemModel.description;
                 orderitem.price = orderitemModel.price;
 
+                UpdateOrderTotals(orderitem.Order);                
                 _db.Entry(orderitem).State = EntityState.Modified;
                 _db.SaveChanges();
                 return StatusCode(HttpStatusCode.NoContent);
@@ -148,7 +149,10 @@ namespace Garcon.Controllers
                 _db.SaveChanges();
 
                 orderitemModel.id = orderitem.id;
-
+                
+                UpdateOrderTotals(orderitem.Order);
+                _db.SaveChanges();
+                
                 return CreatedAtRoute("DefaultApi", new { id = orderitem.id }, orderitemModel);
             }
             catch (APIException ex)
@@ -188,12 +192,38 @@ namespace Garcon.Controllers
                 _db.OrderItems.Remove(orderitem);
                 _db.SaveChanges();
 
+                UpdateOrderTotals(orderitem.Order);
+                _db.SaveChanges();
+
                 return Ok(returnModel);
             }
             catch (Exception e)
             {
                 return InternalServerError(e);
             }
+        }
+
+        private void UpdateOrderTotals(Data.Order order)
+        {
+            decimal amount = 0;
+            decimal taxAmount = 0;
+            decimal totalAmount = 0;
+
+            foreach (OrderItem oneItem in order.OrderItems)
+            {
+                amount += oneItem.price;
+            }
+
+            // Sales tax in GA is 4% -- use a MAGIC NUMBER here!
+            // In reality we would have multiple vendors/locations set up and a tax option in the config
+            taxAmount = decimal.Round(amount * (decimal)1.04, 2);
+            totalAmount = amount + taxAmount;
+
+            order.amount = amount;
+            order.taxAmount = taxAmount;
+            order.totalAmount = totalAmount;
+
+            _db.Entry(order).State = EntityState.Modified;
         }
     }
 }
