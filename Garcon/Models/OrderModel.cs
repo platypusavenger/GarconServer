@@ -11,6 +11,7 @@ namespace Garcon.Models
         public int tableId { get; set; }
         public DateTime openDateTime { get; set; }
         public Nullable<DateTime> closeDateTime { get; set; }
+        public decimal amount { get; set; }
         public decimal taxAmount { get; set; }
         public decimal totalAmount { get; set; }
     }

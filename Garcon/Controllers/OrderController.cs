@@ -39,6 +39,7 @@ namespace Garcon.Controllers
                 tableId = o.tableId, 
                 openDateTime = o.openDateTime,
                 closeDateTime = o.closeDateTime, 
+                amount = o.amount,
                 taxAmount = o.taxAmount, 
                 totalAmount = o.totalAmount
             });
@@ -100,6 +101,7 @@ namespace Garcon.Controllers
                 order.tableId = orderModel.tableId;
                 order.openDateTime = orderModel.openDateTime;
                 order.closeDateTime = orderModel.closeDateTime;
+                order.amount = orderModel.amount;
                 order.taxAmount = orderModel.taxAmount;
                 order.totalAmount = orderModel.totalAmount;
 
@@ -147,6 +149,7 @@ namespace Garcon.Controllers
                 order.tableId = orderModel.tableId;
                 order.openDateTime = orderModel.openDateTime;
                 order.closeDateTime = orderModel.closeDateTime;
+                order.amount = orderModel.amount;
                 order.taxAmount = orderModel.taxAmount;
                 order.totalAmount = orderModel.totalAmount;
                 

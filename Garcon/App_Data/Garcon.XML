@@ -539,7 +539,6 @@
             <returns>
             200 - Success + The deleted OrderItem 
             401 - Not Authorized 
-            405 - Method Not Allowed
             500 - Internal Server Error + the Exception
             </returns>
         </member>

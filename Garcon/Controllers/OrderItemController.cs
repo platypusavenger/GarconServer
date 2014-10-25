@@ -138,10 +138,13 @@ namespace Garcon.Controllers
 
             try
             {
-				// TODO: Create and populate new OrderItem
-                OrderItem orderitem = new OrderItem();
-                // ... set field values
-				_db.OrderItems.Add(orderitem);
+				OrderItem orderitem = new OrderItem();
+
+                orderitem.orderId = orderitemModel.orderId;
+                orderitem.description = orderitemModel.description;
+                orderitem.price = orderitemModel.price;
+
+                _db.OrderItems.Add(orderitem);
                 _db.SaveChanges();
 
                 orderitemModel.id = orderitem.id;
@@ -169,15 +172,12 @@ namespace Garcon.Controllers
         /// <returns>
 		/// 200 - Success + The deleted OrderItem 
 		/// 401 - Not Authorized 
-        /// 405 - Method Not Allowed
 		/// 500 - Internal Server Error + the Exception
         /// </returns>
 		[ResponseType(typeof(OrderItemModel))]
 		public IHttpActionResult Delete(int id)
         {
             try {
-				// For Objects which cannot be deleted:
-				// return StatusCode(HttpStatusCode.MethodNotAllowed);  // Update Return Codes
 				OrderItem orderitem = _db.OrderItems.Find(id);
 				if (orderitem == null)
 				{

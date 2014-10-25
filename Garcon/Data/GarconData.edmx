@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="GarconModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="GarconModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="OrderItems">
           <Key>
             <PropertyRef Name="id" />
@@ -22,6 +22,7 @@
           <Property Name="tableId" Type="int" Nullable="false" />
           <Property Name="openDateTime" Type="datetime" Nullable="false" />
           <Property Name="closeDateTime" Type="datetime" />
+          <Property Name="amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
           <Property Name="taxAmount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
           <Property Name="totalAmount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
         </EntityType>
@@ -176,8 +177,7 @@
             <End Role="UserTipPercents" EntitySet="UserTipPercents" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="GarconModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -204,6 +204,7 @@
           <NavigationProperty Name="OrderItems" Relationship="Self.FK_OrderItems_OrderItems" FromRole="Orders" ToRole="OrderItems" />
           <NavigationProperty Name="Table" Relationship="Self.FK_Orders_Tables" FromRole="Orders" ToRole="Tables" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Orders" FromRole="Orders" ToRole="Payments" />
+          <Property Name="amount" Type="Decimal" Nullable="false" Precision="12" Scale="2" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -383,6 +384,7 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="GarconModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="amount" ColumnName="amount" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="tableId" ColumnName="tableId" />
                 <ScalarProperty Name="openDateTime" ColumnName="openDateTime" />

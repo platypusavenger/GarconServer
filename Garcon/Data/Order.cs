@@ -26,6 +26,7 @@ namespace Garcon.Data
         public Nullable<System.DateTime> closeDateTime { get; set; }
         public decimal taxAmount { get; set; }
         public decimal totalAmount { get; set; }
+        public decimal amount { get; set; }
     
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual Table Table { get; set; }

@@ -38,7 +38,7 @@ namespace Garcon.Controllers
                 id = o.id, 
                 userId = o.userId, 
                 cardType = o.cardType, 
-                desription = o.description, 
+                description = o.description, 
                 fakeDigits = o.fakeDigits, 
                 fakeCVV2 = o.fakeCVV2
             });
@@ -99,7 +99,7 @@ namespace Garcon.Controllers
 
                 usercard.userId = usercardModel.userId;
                 usercard.cardType = usercardModel.cardType;
-                usercard.description = usercardModel.desription;
+                usercard.description = usercardModel.description;
                 usercard.fakeDigits = usercardModel.fakeDigits;
                 usercard.fakeCVV2 = usercardModel.fakeCVV2;
 
@@ -146,7 +146,7 @@ namespace Garcon.Controllers
 
                 usercard.userId = usercardModel.userId;
                 usercard.cardType = usercardModel.cardType;
-                usercard.description = usercardModel.desription;
+                usercard.description = usercardModel.description;
                 usercard.fakeDigits = usercardModel.fakeDigits;
                 usercard.fakeCVV2 = usercardModel.fakeCVV2;
 
