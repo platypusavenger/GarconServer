@@ -209,12 +209,13 @@ namespace Garcon.Controllers
                     throw new APIException("This order has been closed.", 401);
                 }
 
+                Order order = orderitem.Order;
 
                 OrderItemModel returnModel = Get().FirstOrDefault<OrderItemModel>(o => o.id == id);
                 _db.OrderItems.Remove(orderitem);
                 _db.SaveChanges();
 
-                UpdateOrderTotals(orderitem.Order);
+                UpdateOrderTotals(order);
                 _db.SaveChanges();
 
                 return Ok(returnModel);

@@ -9,8 +9,8 @@
             <ul>
                 <li ng-repeat="order in table.orders" style="list-style:none; width: 80%;">
                     <br/>
-                    Order {{order.id}}
-                    <ul><li ng-repeat="item in order.items" style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;{{item.description}} - ${{item.price}}</li><li style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;Tax ${{order.taxAmount}}</li></ul>
+                    Order {{order.id}} &nbsp;&nbsp;&nbsp;&nbsp;<a href="" ng-click="addItem(order.id)">Add Item</a><br />
+                    <ul><li ng-repeat="item in order.items" style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;{{item.description}} - ${{item.price}} &nbsp;&nbsp;<a href="" ng-click="removeItem(item.id)">Remove Item</a></li><li style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;Tax ${{order.taxAmount}}</li></ul>
                 </li>
             </ul>
             <br/>
@@ -102,6 +102,19 @@
                     }
                 }
             }
+        };
+
+        $scope.addItem = function (orderId) {
+            var newItem = {};
+            newItem.orderId = orderId;
+            newItem.description = 'Beverage - Sweet Tea';
+            newItem.price = 2.33;
+            $http.post(base_url + '/api/OrderItem/', newItem).success(function () { $scope.refresh = 0; });
+        };
+
+        $scope.removeItem = function (itemId) {
+            alert(itemId);
+            $http.delete(base_url + '/api/OrderItem/' + itemId).success(function () { $scope.refresh = 0; });
         };
 
         $scope.loadData();
