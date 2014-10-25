@@ -9,13 +9,29 @@
             <ul>
                 <li ng-repeat="order in table.orders" style="list-style:none; width: 80%;">
                     <br/>
-                    Order {{order.id}} &nbsp;&nbsp;&nbsp;&nbsp;<a href="" ng-click="addItem(order.id)">Add Item</a><br />
+                    Order {{order.id}} &nbsp;&nbsp;&nbsp;&nbsp;<a href="" data-toggle="modal" data-target="#addItemModal" ng-click="launchModal(order.id)">Add Item</a><br />
                     <ul><li ng-repeat="item in order.items" style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;{{item.description}} - ${{item.price}} &nbsp;&nbsp;<a href="" ng-click="removeItem(item.id)">Remove Item</a></li><li style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;Tax ${{order.taxAmount}}</li></ul>
                 </li>
             </ul>
             <br/>
         </li>
     </ul>
+    <div class="modal fade" id="addItemModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Select an item from our extensive menu...</h4>
+                </div>
+                <div class="modal-body">
+                    <ul><li ng-repeat="item in menu" style="list-style: none; width: 80%"><a href="" ng-click="addItem(item.id)" data-dismiss="modal">{{item.description}} - ${{item.price}}</a></li></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -29,7 +45,8 @@
         $scope.loaded = false;
         $scope.loadedFeeds = 0;
         $scope.merchantId = 1;
-
+        $scope.menu = [];
+        
         $scope.loadData = function () {
             $scope.loadedFeeds = 0;
             $scope.loaded = false;
@@ -104,16 +121,15 @@
             }
         };
 
-        $scope.addItem = function (orderId) {
+        $scope.addItem = function (itemId) {
             var newItem = {};
-            newItem.orderId = orderId;
-            newItem.description = 'Beverage - Sweet Tea';
-            newItem.price = 2.33;
+            newItem.orderId = $scope.tempOrderId;
+            newItem.description = $scope.menu[itemId].description;
+            newItem.price = $scope.menu[itemId].price;
             $http.post(base_url + '/api/OrderItem/', newItem).success(function () { $scope.refresh = 0; });
         };
 
         $scope.removeItem = function (itemId) {
-            alert(itemId);
             $http.delete(base_url + '/api/OrderItem/' + itemId).success(function () { $scope.refresh = 0; });
         };
 
@@ -129,7 +145,20 @@
             $scope.$apply($scope.refresh);
         };
 
+        $scope.launchModal = function (orderId) {
+            $scope.tempOrderId = orderId;
+        }
         setInterval($scope.refreshingIn, 1000);
+
+        $scope.menu.push({ 'id': 0, 'description': 'Appetizer - Bruschetta', 'price': 6.95 })
+        $scope.menu.push({ 'id': 1, 'description': 'Appetizer - Calamari', 'price': 11.95 })
+        $scope.menu.push({ 'id': 2, 'description': 'Chicken Parmesan', 'price': 11.95 })
+        $scope.menu.push({ 'id': 3, 'description': 'Spaghetti', 'price': 9.95 })
+        $scope.menu.push({ 'id': 4, 'description': 'Alcohol - Red Wine, Bottle', 'price': 24.95 })
+        $scope.menu.push({ 'id': 5, 'description': 'Alcohol - Manhattan', 'price': 8.95 })
+        $scope.menu.push({ 'id': 6, 'description': 'Alcohol - Sazerac', 'price': 8.95 })
+        $scope.menu.push({ 'id': 7, 'description': 'Beverage - Sweet Tea', 'price': 2.33 })
+        $scope.menu.push({ 'id': 8, 'description': 'Beverage - Coca-Cola', 'price': 2.33 })
     });
 
 
