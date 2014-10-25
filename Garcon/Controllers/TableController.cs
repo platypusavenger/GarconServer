@@ -35,6 +35,7 @@ namespace Garcon.Controllers
             return _db.Tables.Select(o => new TableModel
             {
                 id = o.id, 
+                merchantId = o.merchantId,
                 beaconId = o.beaconId, 
                 description = o.description, 
                 available = o.available
@@ -93,7 +94,8 @@ namespace Garcon.Controllers
                 Table table = _db.Tables.FirstOrDefault(o => o.id == id);
 				if (table == null)
                     throw new APIException("Table not found.", 404);
-                
+
+                table.merchantId = tableModel.merchantId;
                 table.available = tableModel.available;
                 table.beaconId = tableModel.beaconId;
                 table.description = tableModel.description;
@@ -139,6 +141,7 @@ namespace Garcon.Controllers
             {
                 Table table = new Table();
 
+                table.merchantId = tableModel.merchantId;
                 table.beaconId = tableModel.beaconId;
                 table.description = tableModel.description;
                 table.available = tableModel.available;

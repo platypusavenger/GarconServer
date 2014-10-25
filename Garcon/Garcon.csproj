@@ -161,6 +161,7 @@
     <Compile Include="Classes\ActionResultWithText.cs" />
     <Compile Include="Classes\APIException.cs" />
     <Compile Include="Classes\Utils.cs" />
+    <Compile Include="Controllers\MerchantController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\OrderItemController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
@@ -183,6 +184,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GarconData.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Merchant.cs">
+      <DependentUpon>GarconData.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Order.cs">
       <DependentUpon>GarconData.tt</DependentUpon>
@@ -208,6 +212,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\MerchantModel.cs" />
     <Compile Include="Models\OrderItemModel.cs" />
     <Compile Include="Models\OrderModel.cs" />
     <Compile Include="Models\PaymentModel.cs" />

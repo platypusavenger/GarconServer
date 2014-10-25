@@ -67,6 +67,31 @@ namespace Garcon.Controllers
             return Ok(order);
         }
 
+        // GET api/Order/Dispute/5
+        /// <summary>
+        /// Retrieve Contact details and transaction information needed to dispute an order.
+        /// </summary>
+        /// <param name="id">The OrderId of the Order to return.</param>
+        /// <returns>
+        /// 200 - Success + The requested Order.
+        /// 401 - Not Authorized 
+        /// 404 - Not Found + Reason
+        /// </returns>
+        [ResponseType(typeof(OrderDisputeModel))]
+        [Route("api/Order/Dispute/{id:int}")]
+        public IHttpActionResult GetOrderDispute(int id)
+        {
+            Order order = _db.Orders.FirstOrDefault<Order>(o => o.id == id);
+            if (order == null)
+            {
+                return this.NotFound("Order not found.");
+            }
+
+            OrderDisputeModel dispute = new OrderDisputeModel(order, id);
+            return Ok(dispute);
+        }
+
+
         // GET api/Order/ByBeacon/5
         /// <summary>
         /// Retrieve any open orders attached to a Beacon.
@@ -135,7 +160,9 @@ namespace Garcon.Controllers
 
                 order.tableId = orderModel.tableId;
                 order.openDateTime = orderModel.openDateTime;
-                order.closeDateTime = orderModel.closeDateTime;
+                
+                // Close is set by updating payments or ForceClose
+                //order.closeDateTime = orderModel.closeDateTime;
 
                 // order values are set only by the update of OrderItems
                 //order.amount = orderModel.amount;
@@ -144,6 +171,56 @@ namespace Garcon.Controllers
 
                 
                 _db.Entry(order).State = EntityState.Modified;
+                _db.SaveChanges();
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+            catch (APIException ex)
+            {
+                if (ex.code == 404)
+                    return this.NotFound(ex.message);
+                else
+                    return this.InternalServerError(ex);
+            }
+            catch (Exception e)
+            {
+                return this.InternalServerError(e);
+            }
+        }
+
+        // PUT api/Order/Close/5
+        /// <summary>
+        /// Force an Order to closed regardless of Payment Status and re-open its Table.
+        /// </summary>
+        /// <param name="id">The OrderId of the Order to close.</param>
+        /// <returns>
+        /// 204 - No Content
+        /// 400 - Bad Request + (Invalid Model State)
+        /// 401 - Not Authorized 
+        /// 404 - Not Found + Reason
+        /// 500 - Internal Server Error + Exception
+        /// </returns>
+        [Route("api/Order/Close/{id:int}")]
+        public IHttpActionResult Put(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                Order order = _db.Orders.FirstOrDefault(o => o.id == id);
+                if (order == null)
+                    throw new APIException("Order not found.", 404);
+
+                // Close the order
+                order.closeDateTime = DateTime.Now;
+                _db.Entry(order).State = EntityState.Modified;
+                
+                // Release the table
+                order.Table.available = true;
+                _db.Entry(order.Table).State = EntityState.Modified;
+
                 _db.SaveChanges();
                 return StatusCode(HttpStatusCode.NoContent);
             }

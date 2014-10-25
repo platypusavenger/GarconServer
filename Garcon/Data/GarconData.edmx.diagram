@@ -18,6 +18,8 @@
         <AssociationConnector Association="GarconModel.FK_Payments_UserCards" ManuallyRouted="false" />
         <AssociationConnector Association="GarconModel.FK_UserCards_Users" ManuallyRouted="false" />
         <AssociationConnector Association="GarconModel.FK_UserTipPercents_Users" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="GarconModel.Merchant" Width="1.5" PointX="0.75" PointY="1.25" />
+        <AssociationConnector Association="GarconModel.FK_Tables_Merchants" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

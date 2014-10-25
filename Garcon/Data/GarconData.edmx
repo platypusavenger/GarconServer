@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="GarconModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Merchants">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="contactPhone" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="contactName" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
         <EntityType Name="OrderItems">
           <Key>
             <PropertyRef Name="id" />
@@ -41,6 +50,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="merchantId" Type="int" Nullable="false" />
           <Property Name="beaconId" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="description" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="available" Type="bit" Nullable="false" />
@@ -120,6 +130,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Tables_Merchants">
+          <End Role="Merchants" Type="Self.Merchants" Multiplicity="1" />
+          <End Role="Tables" Type="Self.Tables" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Merchants">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Tables">
+              <PropertyRef Name="merchantId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserCards_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="UserCards" Type="Self.UserCards" Multiplicity="*" />
@@ -145,6 +167,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="GarconModelStoreContainer">
+          <EntitySet Name="Merchants" EntityType="Self.Merchants" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderItems" EntityType="Self.OrderItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Payments" EntityType="Self.Payments" Schema="dbo" store:Type="Tables" />
@@ -167,6 +190,10 @@
           <AssociationSet Name="FK_Payments_UserCards" Association="Self.FK_Payments_UserCards">
             <End Role="UserCards" EntitySet="UserCards" />
             <End Role="Payments" EntitySet="Payments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tables_Merchants" Association="Self.FK_Tables_Merchants">
+            <End Role="Merchants" EntitySet="Merchants" />
+            <End Role="Tables" EntitySet="Tables" />
           </AssociationSet>
           <AssociationSet Name="FK_UserCards_Users" Association="Self.FK_UserCards_Users">
             <End Role="Users" EntitySet="Users" />
@@ -227,6 +254,8 @@
           <Property Name="description" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="available" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Tables" FromRole="Tables" ToRole="Orders" />
+          <Property Name="merchantId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Merchant" Relationship="GarconModel.FK_Tables_Merchants" FromRole="Table" ToRole="Merchant" />
         </EntityType>
         <EntityType Name="UserCard">
           <Key>
@@ -364,7 +393,34 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="UserTipPercents" EntitySet="UserTipPercents" />
           </AssociationSet>
+          <EntitySet Name="Merchants" EntityType="GarconModel.Merchant" />
+          <AssociationSet Name="FK_Tables_Merchants" Association="GarconModel.FK_Tables_Merchants">
+            <End Role="Merchant" EntitySet="Merchants" />
+            <End Role="Table" EntitySet="Tables" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Merchant">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="contactPhone" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="contactName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Tables" Relationship="GarconModel.FK_Tables_Merchants" FromRole="Merchant" ToRole="Table" />
+        </EntityType>
+        <Association Name="FK_Tables_Merchants">
+          <End Type="GarconModel.Merchant" Role="Merchant" Multiplicity="1" />
+          <End Type="GarconModel.Table" Role="Table" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Merchant">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Table">
+              <PropertyRef Name="merchantId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -408,6 +464,7 @@
           <EntitySetMapping Name="Tables">
             <EntityTypeMapping TypeName="GarconModel.Table">
               <MappingFragment StoreEntitySet="Tables">
+                <ScalarProperty Name="merchantId" ColumnName="merchantId" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="beaconId" ColumnName="beaconId" />
                 <ScalarProperty Name="description" ColumnName="description" />
@@ -442,6 +499,16 @@
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="tipPercent" ColumnName="tipPercent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Merchants">
+            <EntityTypeMapping TypeName="GarconModel.Merchant">
+              <MappingFragment StoreEntitySet="Merchants">
+                <ScalarProperty Name="contactName" ColumnName="contactName" />
+                <ScalarProperty Name="contactPhone" ColumnName="contactPhone" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -5,12 +5,11 @@ using System.Web;
 
 namespace Garcon.Models
 {
-    public class TableModel
+    public class MerchantModel
     {
         public int id { get; set; }
-        public int merchantId { get; set; }
-        public string beaconId { get; set; }
         public string description { get; set; }
-        public bool available { get; set; }
+        public string contactPhone { get; set; }
+        public string contactName { get; set; }
     }
 }

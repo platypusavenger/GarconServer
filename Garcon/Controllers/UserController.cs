@@ -63,9 +63,9 @@ namespace Garcon.Controllers
             return Ok(user);
         }
 
-        // GET api/User/5
+        // GET api/User/History/5
         /// <summary>
-        /// Retrieve a single User from the database.
+        /// Retrieve a single User's Order and Payment history from the database.
         /// </summary>
         /// <param name="id">The UserId of the User to return.</param>
         /// <returns>

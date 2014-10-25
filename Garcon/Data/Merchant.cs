@@ -12,20 +12,18 @@ namespace Garcon.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Table
+    public partial class Merchant
     {
-        public Table()
+        public Merchant()
         {
-            this.Orders = new HashSet<Order>();
+            this.Tables = new HashSet<Table>();
         }
     
         public int id { get; set; }
-        public string beaconId { get; set; }
         public string description { get; set; }
-        public bool available { get; set; }
-        public int merchantId { get; set; }
+        public string contactPhone { get; set; }
+        public string contactName { get; set; }
     
-        public virtual ICollection<Order> Orders { get; set; }
-        public virtual Merchant Merchant { get; set; }
+        public virtual ICollection<Table> Tables { get; set; }
     }
 }

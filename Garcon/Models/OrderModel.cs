@@ -16,6 +16,45 @@ namespace Garcon.Models
         public decimal totalAmount { get; set; }
     }
 
+    public class OrderDisputeModel
+    {
+        public int id { get; set; }
+        public int tableId { get; set; }
+        public DateTime openDateTime { get; set; }
+        public Nullable<DateTime> closeDateTime { get; set; }
+        public decimal amount { get; set; }
+        public decimal taxAmount { get; set; }
+        public decimal totalAmount { get; set; }
+        public List<PaymentModel> Payments { get; set; }
+        public MerchantModel Merchant { get; set; }
+
+        public OrderDisputeModel(Data.Order order, int userId)
+        {
+            id = order.id;
+            tableId = order.tableId;
+            openDateTime = order.openDateTime;
+            closeDateTime = order.closeDateTime;
+            amount = order.amount;
+            taxAmount = order.taxAmount;
+            totalAmount = order.totalAmount;
+            Merchant = new MerchantModel();
+            Merchant.id = order.Table.Merchant.id;
+            Merchant.description = order.Table.Merchant.description;
+            Merchant.contactPhone = order.Table.Merchant.contactPhone;
+            Merchant.contactName = order.Table.Merchant.contactName;
+
+            Payments = order.Payments.Where(p => p.id == userId).Select(o => new PaymentModel
+            {
+                id = o.id,
+                orderId = o.orderId,
+                userCardId = o.userCardId,
+                tipAmount = o.tipAmount,
+                amount = o.amount
+            }).ToList();
+
+        }
+    }
+
     public class OrderDetailModel
     {
         public int id { get; set; }
@@ -54,7 +93,6 @@ namespace Garcon.Models
                 tipAmount = o.tipAmount,
                 amount = o.amount
             }).ToList();
-
         }
 
     }

@@ -32,5 +32,6 @@ namespace Garcon.Data
         public virtual DbSet<UserCard> UserCards { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserTipPercent> UserTipPercents { get; set; }
+        public virtual DbSet<Merchant> Merchants { get; set; }
     }
 }
