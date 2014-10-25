@@ -540,7 +540,8 @@
         </member>
         <member name="M:Garcon.Controllers.OrderController.Put(System.Int32)">
             <summary>
-            Force an Order to closed regardless of Payment Status and re-open its Table.
+            Force an Order to closed regardless of Payment Status and re-open its Table.  
+            Likely the result of a manual payment with an actual credit card.  How stone age.
             </summary>
             <param name="id">The OrderId of the Order to close.</param>
             <returns>

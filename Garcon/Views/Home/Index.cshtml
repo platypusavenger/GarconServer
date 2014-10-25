@@ -1,24 +1,123 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+﻿<!-- This is a heavily hard-coded mock-up of what a POS integration might look like -->
+<div ng-app="garconApp" ng-controller="GarconCtrl">
+    <h3>Garcon Mock POS -- Refreshing in {{refresh}}</h3>
+    <ul>
+        <li ng-repeat="table in tables" style="list-style:none; width: 80%;">
+            <br />
+            <span style="color: green; width: 60%;" ng-show="{{table.available}}"><span class="col-md-6"> {{table.description}} - Available</span> <button class="btn btn-success col-md-2 pull-right" ng-click="openOrder(table.id)">Open Order</button></span>
+            <span style="color: red; width: 60%;" ng-show="{{!table.available}}"><span class="col-md-6"> {{table.description}} - Unavailable;  Total: ${{table.total}} </span> <button class="btn btn-warning col-md-2 pull-right" ng-click="closeOrder(table.id)">Manual Close</button></span>
+            <ul>
+                <li ng-repeat="order in table.orders" style="list-style:none; width: 80%;">
+                    <br/>
+                    Order {{order.id}}
+                    <ul><li ng-repeat="item in order.items" style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;{{item.description}} - ${{item.price}}</li><li style="list-style:none; width: 80%;">&nbsp;&nbsp;&nbsp;Tax ${{order.taxAmount}}</li></ul>
+                </li>
+            </ul>
+            <br/>
+        </li>
+    </ul>
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
-</div>
+
+<script>
+
+    var base_url = '/Garcon';
+    if (window.location.hostname == 'localhost')
+        base_url = '';
+
+    angular.module('garconApp', []).controller('GarconCtrl', function ($scope, $http) {
+        $scope.refresh = 30;
+        $scope.loaded = false;
+        $scope.loadedFeeds = 0;
+        $scope.merchantId = 1;
+
+        $scope.loadData = function () {
+            $scope.loadedFeeds = 0;
+            $scope.loaded = false;
+            $http.get(base_url + '/api/Table?$filter=(merchantId eq ' + $scope.merchantId + ')').success($scope.tablesCallback);
+            $http.get(base_url + '/api/Order?$filter=(closeDateTime eq null)').success($scope.ordersCallback);
+        };
+
+        $scope.masterCallback = function () {
+            $scope.loadedFeeds = $scope.loadedFeeds + 1;
+            
+            if ($scope.loadedFeeds == 2) {
+                $scope.loaded = true;
+                // Stitch together Order Information on each Table
+                for (var i = 0; i < $scope.tables.length; i++) {
+                    if ($scope.tables[i].available == false) {
+                        $scope.tables[i].orders = [];
+                        $scope.tables[i].total = 0;
+                        for (var j = 0; j < $scope.orders.length; j++) {
+                            if ($scope.orders[j].tableId == $scope.tables[i].id) {
+                                $scope.orders[j].items = [];
+                                $scope.tables[i].orders.push($scope.orders[j]);
+                                $http.get(base_url + '/api/OrderItem?$filter=(orderId eq ' + $scope.orders[j].id + ')').success($scope.orderItemsCallback);
+                                $scope.tables[i].total += $scope.orders[j].totalAmount;
+                            }
+
+                        }
+                    }
+                }
+            }
+        };
+
+        $scope.tablesCallback = function (tables) {
+            $scope.tables = tables;
+            $scope.masterCallback();
+        };
+
+        $scope.ordersCallback = function (orders) {
+            $scope.orders = orders;
+            $scope.masterCallback();
+        };
+
+        $scope.orderItemsCallback = function (foundItems) {
+            if (foundItems.length > 0) {
+                var orderId = foundItems[0].orderId;
+                for (var i = 0; i < $scope.orders.length; i++) {
+                    if ($scope.orders[i].id == orderId) {
+                        for (var j = 0; j < foundItems.length; j++)
+                            $scope.orders[i].items.push(foundItems[j]);
+                    }
+                }
+            }
+        };
+
+        $scope.openOrder = function (tableId) {
+            var newOrder = {};
+            newOrder.tableId = tableId;
+            newOrder.openDateTime = '2014-10-25T06:49:30';
+            newOrder.closeDateTime = null;
+            newOrder.amount = 0;
+            newOrder.taxAmount = 0;
+            newOrder.totalAmount = 0;
+            $http.post(base_url + '/api/Order/', newOrder).success(function () { $scope.refresh = 0; });
+        };
+
+        $scope.closeOrder = function (tableId) {
+            for (var i = 0; i < $scope.tables.length; i++) {
+                if ($scope.tables[i].id == tableId) {
+                    for (var j = 0; j < $scope.tables[i].orders.length; j++) {
+                        $http.put(base_url + '/api/Order/Close/' + $scope.tables[i].orders[j].id).success(function () { $scope.refresh = 0; });
+                    }
+                }
+            }
+        };
+
+        $scope.loadData();
+
+        $scope.refreshingIn = function () {
+            if ($scope.refresh == 0) {
+                $scope.refresh = 30;
+                $scope.loadData();
+            } else
+                $scope.refresh = $scope.refresh - 1;
+
+            $scope.$apply($scope.refresh);
+        };
+
+        setInterval($scope.refreshingIn, 1000);
+    });
+
+
+</script>

@@ -189,7 +189,8 @@ namespace Garcon.Controllers
 
         // PUT api/Order/Close/5
         /// <summary>
-        /// Force an Order to closed regardless of Payment Status and re-open its Table.
+        /// Force an Order to closed regardless of Payment Status and re-open its Table.  
+        /// Likely the result of a manual payment with an actual credit card.  How stone age.
         /// </summary>
         /// <param name="id">The OrderId of the Order to close.</param>
         /// <returns>
@@ -260,9 +261,21 @@ namespace Garcon.Controllers
             try
             {
                 Order order = new Order();
+                Table table = _db.Tables.FirstOrDefault(o => o.id == orderModel.tableId);
+                if (table == null)
+                {
+                    throw new APIException("Table not found.", 404);
+                }
+                if (!table.available)
+                {
+                    throw new APIException("Table is not available.", 401);
+                }
+
+                table.available = false;
+                _db.Entry(table).State = EntityState.Modified;
 
                 order.tableId = orderModel.tableId;
-                order.openDateTime = orderModel.openDateTime;
+                order.openDateTime = DateTime.Now;
                 order.closeDateTime = orderModel.closeDateTime;
                 order.amount = orderModel.amount;
                 order.taxAmount = orderModel.taxAmount;
