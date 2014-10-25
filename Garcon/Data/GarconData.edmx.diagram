@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="622e947a845141fba4b1faeb905d9228" Name="Diagram1">
+        <EntityTypeShape EntityType="GarconModel.OrderItem" Width="1.5" PointX="5.25" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="GarconModel.Order" Width="1.5" PointX="3" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="GarconModel.Payment" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="GarconModel.Table" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="GarconModel.UserCard" Width="1.5" PointX="3" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="GarconModel.User" Width="1.5" PointX="0.75" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="GarconModel.UserTipPercent" Width="1.5" PointX="3" PointY="10.625" IsExpanded="true" />
+        <AssociationConnector Association="GarconModel.FK_OrderItems_OrderItems" ManuallyRouted="false" />
+        <AssociationConnector Association="GarconModel.FK_Orders_Tables" ManuallyRouted="false" />
+        <AssociationConnector Association="GarconModel.FK_Payments_Orders" ManuallyRouted="false" />
+        <AssociationConnector Association="GarconModel.FK_Payments_UserCards" ManuallyRouted="false" />
+        <AssociationConnector Association="GarconModel.FK_UserCards_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="GarconModel.FK_UserTipPercents_Users" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
