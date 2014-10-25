@@ -136,10 +136,13 @@ namespace Garcon.Controllers
                 order.tableId = orderModel.tableId;
                 order.openDateTime = orderModel.openDateTime;
                 order.closeDateTime = orderModel.closeDateTime;
-                order.amount = orderModel.amount;
-                order.taxAmount = orderModel.taxAmount;
-                order.totalAmount = orderModel.totalAmount;
 
+                // order values are set only by the update of OrderItems
+                //order.amount = orderModel.amount;
+                //order.taxAmount = orderModel.taxAmount;
+                //order.totalAmount = orderModel.totalAmount;
+
+                
                 _db.Entry(order).State = EntityState.Modified;
                 _db.SaveChanges();
                 return StatusCode(HttpStatusCode.NoContent);

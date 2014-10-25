@@ -92,9 +92,14 @@ namespace Garcon.Controllers
             try
             {
 				OrderItem orderitem = _db.OrderItems.FirstOrDefault(o => o.id == id);
+
 				if (orderitem == null)
                     throw new APIException("OrderItem not found.", 404);
 
+                if (orderitem.Order.closeDateTime != null)
+                {
+                    throw new APIException("This order has been closed.", 401);
+                }
                 orderitem.orderId = orderitemModel.orderId;
                 orderitem.description = orderitemModel.description;
                 orderitem.price = orderitemModel.price;
@@ -139,6 +144,17 @@ namespace Garcon.Controllers
 
             try
             {
+                Order order = _db.Orders.FirstOrDefault(o => o.id == orderitemModel.orderId);
+                if (order == null)
+                {
+                    throw new APIException("Order not found.", 404);
+                }
+
+                if (order.closeDateTime != null)
+                {
+                    throw new APIException("This order has been closed.", 401);
+                }
+
 				OrderItem orderitem = new OrderItem();
 
                 orderitem.orderId = orderitemModel.orderId;
@@ -188,6 +204,12 @@ namespace Garcon.Controllers
 					return this.NotFound("OrderItem not found.");
 				}
 
+                if (orderitem.Order.closeDateTime != null)
+                {
+                    throw new APIException("This order has been closed.", 401);
+                }
+
+
                 OrderItemModel returnModel = Get().FirstOrDefault<OrderItemModel>(o => o.id == id);
                 _db.OrderItems.Remove(orderitem);
                 _db.SaveChanges();
@@ -216,7 +238,7 @@ namespace Garcon.Controllers
 
             // Sales tax in GA is 4% -- use a MAGIC NUMBER here!
             // In reality we would have multiple vendors/locations set up and a tax option in the config
-            taxAmount = decimal.Round(amount * (decimal)1.04, 2);
+            taxAmount = decimal.Round(amount * (decimal).04, 2);
             totalAmount = amount + taxAmount;
 
             order.amount = amount;

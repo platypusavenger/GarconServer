@@ -141,15 +141,23 @@ namespace Garcon.Controllers
 
             try
             {
+                Order order = _db.Orders.FirstOrDefault<Order>(o => o.id == paymentModel.orderId);
+                if (order == null)
+                {
+                    throw new APIException("Order not found.", 404);
+                }
                 Payment payment = new Payment();
 
                 payment.orderId = paymentModel.orderId;
                 payment.userCardId = paymentModel.userCardId;
                 payment.tipAmount = paymentModel.tipAmount;
                 payment.amount = paymentModel.amount;
-                
+
+                order.Payments.Add(payment);
                 _db.Payments.Add(payment);
+                CheckOrderStatus(order);
                 _db.SaveChanges();
+
 
                 paymentModel.id = payment.id;
 
@@ -198,6 +206,24 @@ namespace Garcon.Controllers
             catch (Exception e)
             {
                 return InternalServerError(e);
+            }
+        }
+
+        private void CheckOrderStatus(Order order)
+        {
+            decimal total = 0;
+            foreach (Payment onePayment in order.Payments)
+            {
+                total += onePayment.amount;
+            }
+
+            // All items on this order have been paid
+            if (order.totalAmount <= total)
+            {
+                order.Table.available = true;
+                order.closeDateTime = DateTime.Now;
+                _db.Entry(order.Table).State = EntityState.Modified;
+                _db.Entry(order).State = EntityState.Modified;
             }
         }
     }
